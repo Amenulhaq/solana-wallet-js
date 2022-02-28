@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <button onClick="javascript:Connect()">Connect!</button>
+        <button onClick="javascript:checkConnected()">Is Connected ?</button>
+        <button onClick="javascript:getBalance()">Get Balance</button>
+        <div id="address"></div>
+        <div id="balance"></div>
+        <script>
+            var publicKey ='';
+            function Connect() {
+              solana.connect().then((x) => {
+                publicKey = x.publicKey.toString();
+                document.getElementById("address").innerHTML = publicKey;
+              })
+            }
+
+            function checkConnected(){
+                alert(solana.isConnected);
+            }
+
+            function getBalance() {
+                if(publicKey == ''){
+                    $('#balance').text('Please click on connect');
+                    return;
+                }
+
+                var settings = {
+                    "url": "https://api.devnet.solana.com",
+                    "method": "POST",
+                    "timeout": 0,
+                    "headers": {
+                        "Content-Type": " application/json"
+                    },
+                    "data": "{\"jsonrpc\":\"2.0\", \"id\":1, \"method\":\"getBalance\", \"params\":[\""+ publicKey +"\"]}",
+                    };
+                    
+                    $('#balance').text('Please wait...');
+                    $.ajax(settings).done(function (response) {
+                        console.log(response);
+                        if(response.result.value > 0) {
+                            $('#balance').text(response.result.value / 1000000000);
+                        }else {
+                            $('#balance').text(0);
+                        }
+                    });
+            }
+
+          </script>
+    </body>
+</html>
